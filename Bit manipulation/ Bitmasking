@@ -2,7 +2,7 @@
 using namespace std;
 
 int main(){
-    //Bitmasking technique
+    //Bitmasking technique 
     //Generating subsets problem
     //time complexity -> o(2^n)
     //generally n <= 20 for bitmasking problems
