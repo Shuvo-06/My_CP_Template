@@ -2,34 +2,30 @@
 using namespace std;
 
 int main(){
-    //2sum using two pointers technique
-    //Time complexity -> O(n)
-    //Pre-requisite -> sorted array
-    
-    int n;
-    cin >> n;
-    vector<int> v(n);
-    for (int i=0; i<n; i++) cin>>v[i];
+  //2sum using two pointers technique
+  //Time complexity -> O(n)
+  //Pre-requisite -> sorted array
+  //tested on CSES "sum of two values problem"
 
-    int tt;
-    cin >> tt ;
-    while (tt--){
-        int x;
-        cin >> x;
-        int l=0, r=n-1 ;
-        bool found = false;
-        //if duplicate index can be taken,use l<=r
-        while (l < r){
-            if (v[l] + v[r] == x) {
-                found = true;
-                break;
-            }
-            else if (v[l] + v[r] > x ) r--;
-            else l++;
-        }
-
-        if (found) cout << l << " " << r << "\n";
-        else cout << -1 << "\n";
+  
+  int n,x;
+  cin >> n >> x;
+  vector<pair<int, int>> v(n);
+  for (int i=0; i<n; i++){
+    cin>>v[i].first;
+    v[i].second = i + 1;
+  }
+  sort(v.begin(), v.end());
+  
+  int l = 0, r = n-1;
+  while (l < r){ //if duplicate index can be taken ,use l<=r
+    if (v[l].first + v[r].first == x) {
+      cout << v[l].second << " " << v[r].second <<"\n";
+      return 0;
     }
-    return 0;
+    else if (v[l].first + v[r].first > x ) r--;
+    else l++;
+  }
+  cout << "IMPOSSIBLE" << "\n";
+  return 0;
 }
