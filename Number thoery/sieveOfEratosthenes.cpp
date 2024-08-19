@@ -7,11 +7,15 @@ void sieve(int n,bool genArr){
     isPrime.resize(n, true);
     isPrime[0] = false;
     isPrime[1] = false;
-    for (int i=2;  i*i <isPrime.size(); i++){
+    for (int i = 2;  i*i < n; i++){
         if (isPrime[i]){
-            if (genArr) primes.push_back(i);
-            for (int j=i*i; j < isPrime.size(); j+=i) isPrime[j] = false;
+            for (int j = i*i; j < n; j+=i) isPrime[j] = false;
         }
+    }
+    if (genArr){
+      for (int i=2; i<n;i++) {
+        if (isPrime[i]) primes.push_back(i);
+      }
     }
     return ;
 }
