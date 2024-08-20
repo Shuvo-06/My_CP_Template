@@ -17,16 +17,16 @@ using namespace std;
 #define MOD 1000000007
 ll __lcm(ll a,ll b) {return (a*b)/(__gcd(a,b));}
 ll fact(ll n,ll mod) {return ( (n<0) ? -1 : (n<=1) ? 1 : (fact(n-1,mod)*n)%mod );}
+void setIO(string s){freopen((s + ".in").c_str(), "r",  stdin);freopen((s + ".out").c_str(), "w",  stdout);}
 
-void solve() {
-    //code starts here
-    
-    return;
+void solve(){
+  
+  return;
 }
 
 int main() {
-    fast;
-    testcase(tt) solve();
-    //solve();
-    return 0;
+  fast;
+  solve();
+  //testcase(tt) solve();
+  return 0;
 }
