@@ -1,38 +1,34 @@
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
 using namespace std;
-//gray code 
 
-void genGray(vector<int> &gray,int n){
-    for (int i=0; i< (int)gray.size(); i++) gray[i] = i ^ (i >> 1);
-    return;
+// gray(i) = i ^ (i >> 1);
+// rev_gray(gray(i)) = i
+
+int gray (int n) {
+  	return n ^ (n >> 1);
 }
-
-//i have no idea of what you wrote here YouKn0wwho
-/*int g (int n) {
-    return n ^ (n >> 1);
+int rev_gray (int g) {
+  	int n = 0;
+  	for (; g; g >>= 1) n ^= g;
+  	return n;
 }
-int rev_g (int g) {
-  int n = 0;
-  for (; g; g >>= 1)
-    n ^= g;
-  return n;
-}*/
-// property: g(i) = g(i - 1) ^ (1 << lsb(i))
-
 
 int main() {
-    //Gray Code 
+  	ios::sync_with_stdio(false);
+  	cin.tie(0);
+  	cout.tie(0);
+  	// Gray Code 
     // The problem is to generate all the bit string of size n , where two adjacent bit string only differ by one bit (i.e Hamming distance is 1)
-    // formula : g(i) = i ^ (i>>1) ;
-    //Time Complexity -> O(2^n)
-    int n;
-    cin >> n;
-    vector <int> gray(1<<n);
-    genGray(gray,n);
-    
-    for (auto x : gray) {
-        for (int j=n-1; j>=0; j--) cout << ((x>>j)&1);
-        cout << "\n";
-    }
-    return 0;
+	// Time complexity : O(2 ^ n)
+	// Gray code of n bits forms a Hamiltonian cycle on a hypercube, where each bit corresponds to one dimension.
+	// Can be used to solve tower of hanoi problem
+    // Tested on CSES : Gray Code problem
+
+  	int n;
+  	cin >> n;
+  	for (int i = 0; i < (1<<n); i++){
+    	for (int j = n-1; j >= 0; j--) cout << ((gray(i) >> j) & 1 );
+    	cout << "\n";
+  	}
+  	return 0;
 }
