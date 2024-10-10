@@ -24,8 +24,8 @@ void SPF(int n){
 vector <int> factorize(int k) {
 	vector <int> ans;
 	while(k > 1) {
-		ans.push_back(sp[k]);
-		k /= sp[k];
+		ans.push_back(spf[k]);
+		k /= spf[k];
 	}
 	return ans;
 }
