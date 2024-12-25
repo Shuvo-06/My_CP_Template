@@ -1,30 +1,48 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-template<typename Iterator>
-long long kadane(Iterator st_it, Iterator en_it) {
-    using ValueType = typename iterator_traits<Iterator>::value_type;
-    ValueType best = *st_it, sum = 0;
-    for (Iterator it = st_it; it != en_it; ++it) {
-        sum = max(*it, sum + *it);
-        best = max(best, sum);
-    }
-    return best;
+long long int kadane_max(vector<long long int> &v, int sti, int eni) {
+  long long int res = LLONG_MIN, curr = 0;
+  for (int i = sti; i <= eni; i++) {
+    curr = max(v[i], curr + v[i]);
+    res = max(res, curr);
+  }
+  return res;
 }
 
-int main() {
-    //Kadane's algorithm 
-    //maximum subarray sum
-    //Time complexity -> O(n)
-    //function tested on CSES Maximum Subarray Sum problem
-    //function description -> kadane (starting iterator, ending iterator) [like other STL functions v.begin(), v.end()]
+long long int kadane_min(vector<long long int> &v, int sti, int eni) {
+  long long int res = LLONG_MAX, curr = 0;
+  for (int i = sti; i <= eni; i++) {
+    curr = min(v[i], curr + v[i]);
+    res = min(res, curr);
+  }
+  return res;
+}
 
+int main(){
+  ios::sync_with_stdio(false);
+  cin.tie(0);
+  cout.tie(0);
+  
+  // Kadane's Algorithm to find minimum and maximum sub-array sum
+  // Time complexity : O(n)
+  // Space complexity : O(n)
+  // Tested on Codeforecs 2043C
+  
+  int tt;
+  cin >> tt;
+  while (tt--) {
     int n;
     cin >> n;
-    vector<long long int> v(n);
-    for (int i=0; i<n; i++) cin>>v[i];
     
-    cout<< kadane(v.begin(), v.end()) <<"\n";
+    if (n == 0) {
+      cout << "No element\n";
+      continue;
+    }
+    vector <long long int> v(n);
+    for (auto &x : v) cin >> x;
     
-    return 0;
+    cout << kadane_min(v, 0, n -1) << " " << kadane_max(v, 0, n -1) << "\n";
+  }
+  return 0;
 }
