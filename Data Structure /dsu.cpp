@@ -11,50 +11,93 @@ using namespace std;
 
     Time Complexities:
     - find(v): O(α(n)), almost constant.
-    - union_sets(a, b): O(α(n)), almost constant.
-    - get_parent(v): O(1), returns direct parent (not necessarily the root).
+    - union_sets(a, b), can_union_bipartite(u, v), union_bipartite(u, v) : O(α(n)), almost constant.
+    - get_parent(v): O(1), returns direct parent.
 */
 
 
 class DSU {
-    vector <int> root, size, parent;
+    vector<int> next;
+public:
+    vector<int> root, size, parent, color;
     int n;
+    bool is_bipartite = true;
 
-    public:
-        DSU(int _n) : n(_n) {
-            root.resize(n + 1);
-            size.resize(n + 1);
-            parent.resize(n + 1);
-            for (int i = 1; i <= n; ++i) {
-                root[i] = i;
-                size[i] = 1;
-                parent[i] = -1;
-            }
+    DSU(int _n) : n(_n) {
+        root.resize(n + 1);
+        size.resize(n + 1);
+        parent.resize(n + 1);
+        color.resize(n + 1);
+        next.resize(n + 1);
+        for (int i = 1; i <= n; ++i) {
+            root[i] = i;
+            size[i] = 1;
+            parent[i] = -1;
+            color[i] = 0;
+            next[i] = i + 1;
+        }
+        next[n] = n;
+    }
+
+    int find(int v) {
+        if (root[v] == v) return v;
+        int par = find(root[v]);
+        color[v] ^= color[root[v]];
+        return root[v] = par;
+    }
+
+    void union_sets(int a, int b) {
+        a = find(a);
+        b = find(b);
+        if (a != b) {
+            if (size[a] < size[b]) swap(a, b);
+            root[b] = a;
+            size[a] += size[b];
+            parent[b] = a;
+        }
+    }
+
+    void union_bipartite(int a, int b) {
+        int ra = find(a);
+        int rb = find(b);
+        if (ra == rb) {
+            if ((color[a] ^ color[b]) != 1) is_bipartite = false;
+            return;
         }
 
-        int find(int v) {
-            if (root[v] == v) return v;
-            return root[v] = find(root[v]);
+        if (size[ra] < size[rb]) {
+            swap(ra, rb);
+            swap(a, b);
         }
 
-        int get_parent(int v) {
-            return parent[v];
-        }
+        root[rb] = ra;
+        color[rb] = color[a] ^ color[b] ^ 1;
+        size[ra] += size[rb];
+        parent[rb] = ra;
+    }
+    
+    bool can_union_bipartite(int u, int v) {
+        int ru = find(u);
+        int rv = find(v);
+        if (ru != rv) return true;
+        return (color[u] ^ color[v]) == 1;
+    }
 
-        void union_sets(int a, int b) {
-            a = find(a);
-            b = find(b);
-            if (a != b) {
-                if (size[a] < size[b]) swap(a, b);
-                root[b] = a;
-                size[a] += size[b];
-                parent[b] = a;
-            }
+    void unite_range(int x, int y) {
+        int i = x;
+        while (i < y) {
+            int j = next[i];
+            union_sets(i, j);
+            next[i] = next[j];
+            i = next[i];
         }
+    }
 };
 
 int main() {
-    ios::sync_with_stdio(false); cin.tie(0); cout.tie(0);
+    ios::sync_with_stdio(false);
+    cin.tie(0);
+    cout.tie(0);
 
     DSU dsu(5);
     dsu.union_sets(1, 2);
@@ -76,6 +119,6 @@ int main() {
         - 1, 2, 4 → 1
         - 3, 5 → 3
     */
- 
+
     return 0;
 }
