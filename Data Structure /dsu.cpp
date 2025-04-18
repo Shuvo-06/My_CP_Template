@@ -19,16 +19,18 @@ using namespace std;
 class DSU {
     vector<int> next;
 public:
-    vector<int> root, size, parent, color;
+    vector<int> root, size, parent, color, depth;
     int n;
     bool is_bipartite = true;
+    int num_components;
 
-    DSU(int _n) : n(_n) {
+    DSU(int _n) : n(_n), num_components(_n) {
         root.resize(n + 1);
         size.resize(n + 1);
         parent.resize(n + 1);
         color.resize(n + 1);
         next.resize(n + 1);
+        depth.resize(n + 1, 0);
         for (int i = 1; i <= n; ++i) {
             root[i] = i;
             size[i] = 1;
@@ -42,7 +44,7 @@ public:
     int find(int v) {
         if (root[v] == v) return v;
         int par = find(root[v]);
-        color[v] ^= color[root[v]];
+        depth[v] += depth[root[v]];
         return root[v] = par;
     }
 
@@ -54,6 +56,8 @@ public:
             root[b] = a;
             size[a] += size[b];
             parent[b] = a;
+            depth[b] = 1;
+            num_components--;
         }
     }
 
@@ -74,8 +78,10 @@ public:
         color[rb] = color[a] ^ color[b] ^ 1;
         size[ra] += size[rb];
         parent[rb] = ra;
+        depth[rb] = 1;
+        num_components--;
     }
-    
+
     bool can_union_bipartite(int u, int v) {
         int ru = find(u);
         int rv = find(v);
@@ -87,10 +93,16 @@ public:
         int i = x;
         while (i < y) {
             int j = next[i];
+            if (j > y) break;
             union_sets(i, j);
             next[i] = next[j];
-            i = next[i];
+            i = j;
         }
+    }
+
+    int get_depth(int x) {
+        find(x);
+        return depth[x];
     }
 };
 
