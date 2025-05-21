@@ -1,16 +1,25 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-
 /*
-Binary Indexed Tree aka Fenwick Tree
-- Construction: O(N)
-- query, add: O(log N)
-- find_kth: O(log N) — find smallest index with prefix sum >= k
-Note:
-- add(i, val): adds val to element at index i
-- set(i, val): sets element at index i to val (requires current value)
-- addr(l, r, val): adds val to range [l, r]
+Binary Indexed Tree (Fenwick Tree)
+----------------------------------
+Supports:
+- add(i, val): add to index i
+- set(i, val): set index i to val
+- add(l, r, val): add val to range [l, r]
+- query(i): value at index i
+- query(l, r): range sum [l, r]
+- find_kth(k): smallest index with prefix sum ≥ k
+
+Time: O(log N) per operation, O(N) build.
+
+Edge Cases:
+-----------
+- 0-based input, internally 1-based.
+- Ensure 0 ≤ i, l, r < n.
+- Works with negatives & zeros.
+- find_kth assumes non-negative prefix sums.
 */
 
 template <class T>
@@ -19,9 +28,12 @@ struct BIT {
     vector<T> bit;
 
     BIT() {}
-    BIT(int _n) {
-        n = _n;
+    BIT(vector <T> &v) {
+        n = v.size();
         bit.assign(n + 1, 0);
+        for (int i = 0; i < n; i++) {
+            this->add(i, v[i]);
+        }
     }
 
     T pref_sum(int i) {
@@ -31,11 +43,14 @@ struct BIT {
     }
 
     void add(int i, T val) {
+        i++;
         if (i <= 0) return;
-        for (; i <= n; i += (i & -i)) bit[i] += val;
+        for (; i < (int)bit.size(); i += (i & -i)) bit[i] += val;
     }
 
+
     void add(int l, int r, T val) {
+        l++; r++;
         add(l, val);
         add(r + 1, -val);
     }
@@ -46,11 +61,13 @@ struct BIT {
     }
 
     T query(int l, int r) {
+        l++; r++;
         return pref_sum(r) - pref_sum(l - 1);
     }
 
     T query(int i) {
-        return pref_sum(i);
+        i++;
+        return pref_sum(i) - pref_sum(i - 1);
     }
 
     int find_kth(T k) {
@@ -63,7 +80,7 @@ struct BIT {
                 idx = nextIdx;
             }
         }
-        return idx + 1;
+        return idx;
     }
 };
 
@@ -77,12 +94,27 @@ int main() {
         freopen("error.txt", "w", stderr);
     #endif
     
-    vector <int> arr = {0, 3, 2, -1, 6, 5, 4, -3, 3, 7, 2};
+    int n, q;
+    cin >> n >> q;
+    vector <long long int> v(n);
+    for (auto &x : v) cin >> x;
 
-    int n = (int)arr.size();
-    BIT <int> bit(n);
+    BIT <long long int> bit(v);
 
-    for (int i = 1; i <= n; i++) bit.add(i, arr[i]);
+    while (q--) {
+        int type;
+        cin >> type;
+        if (type == 1) {
+            int i, v;
+            cin >> i >> v;
+            bit.set(i, v);
+        }
+        else {
+            int l, r;
+            cin >> l >> r;
+            cout << bit.query(l, r - 1) << "\n";
+        }
+    }
 
     return 0;
 }
