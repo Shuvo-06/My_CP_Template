@@ -24,8 +24,7 @@ struct BIT {
         bit.assign(n + 1, 0);
     }
 
-
-    T query(int i) {
+    T pref_sum(int i) {
         T ans = 0;
         for (; i >= 1; i -= (i & -i)) ans += bit[i];
         return ans;
@@ -36,18 +35,22 @@ struct BIT {
         for (; i <= n; i += (i & -i)) bit[i] += val;
     }
 
-    void addr(int l, int r, T val) {
+    void add(int l, int r, T val) {
         add(l, val);
         add(r + 1, -val);
     }
 
     void set(int i, T val) {
-        T current = query(i) - query(i - 1);
+        T current = query(i);
         add(i, val - current);
     }
 
     T query(int l, int r) {
-        return query(r) - query(l - 1);
+        return pref_sum(r) - pref_sum(l - 1);
+    }
+
+    T query(int i) {
+        return pref_sum(i);
     }
 
     int find_kth(T k) {
@@ -80,25 +83,6 @@ int main() {
     BIT <int> bit(n);
 
     for (int i = 1; i <= n; i++) bit.add(i, arr[i]);
-
-    cout << "Prefix sum (1..5): " << bit.query(5) << "\n"; // Expected: 3+2+(-1)+6+5=15
-    cout << "Range sum (3..7): " << bit.query(3, 7) << "\n"; // Expected: (-1)+6+5+4+(-3) = 11
-
-    // Point update: add 2 to index 4
-    bit.add(4, 2);
-    cout << "After adding 2 to index 4, value at 4: " << bit.query(4, 4) << "\n"; // Expected: 6+2=8
-
-    // Range add: add 3 to elements from index 2 to 5
-    bit.addr(2, 5, 3);
-    cout << "After adding 3 to range [2..5], range sum (1..5): " << bit.query(1, 5) << "\n";
-
-    // Set value at index 3 to 10
-    bit.set(3, 10);
-    cout << "After setting index 3 to 10, value at 3: " << bit.query(3, 3) << "\n"; // 10
-
-    // Use find_kth: find smallest index where prefix sum >= 20
-    int idx = bit.find_kth(20);
-    cout << "Smallest index with prefix sum >= 20: " << idx << "\n";
 
     return 0;
 }
