@@ -25,48 +25,47 @@ Edge Cases:
 template <class T>
 struct BIT {
     int n;
-    vector<T> bit;
+    vector <T> bit;
 
     BIT() {}
-    BIT(vector <T> &v) {
+    BIT(vector<T> &v) {
         n = v.size();
         bit.assign(n + 1, 0);
         for (int i = 0; i < n; i++) {
-            this->add(i, v[i]);
+            add(i, i, v[i]); // for RU-PQ
+            // add(i, v[i]); // for PU-RQ
         }
     }
 
-    T pref_sum(int i) {
+    T ipsum(int i) {
         T ans = 0;
-        for (; i >= 1; i -= (i & -i)) ans += bit[i];
+        for (; i; i -= (i & -i)) ans += bit[i];
         return ans;
+    }
+
+    T pref_sum(int i) {
+        return ipsum(i + 1);
     }
 
     void add(int i, T val) {
         i++;
-        if (i <= 0) return;
         for (; i < (int)bit.size(); i += (i & -i)) bit[i] += val;
     }
 
-
     void add(int l, int r, T val) {
-        l++; r++;
         add(l, val);
         add(r + 1, -val);
     }
 
     void set(int i, T val) {
-        T current = query(i);
-        add(i, val - current);
+        add(i, val - query(i));
     }
 
     T query(int l, int r) {
-        l++; r++;
         return pref_sum(r) - pref_sum(l - 1);
     }
 
     T query(int i) {
-        i++;
         return pref_sum(i) - pref_sum(i - 1);
     }
 
@@ -100,21 +99,6 @@ int main() {
     for (auto &x : v) cin >> x;
 
     BIT <long long int> bit(v);
-
-    while (q--) {
-        int type;
-        cin >> type;
-        if (type == 1) {
-            int i, v;
-            cin >> i >> v;
-            bit.set(i, v);
-        }
-        else {
-            int l, r;
-            cin >> l >> r;
-            cout << bit.query(l, r - 1) << "\n";
-        }
-    }
 
     return 0;
 }
