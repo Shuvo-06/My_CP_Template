@@ -22,8 +22,10 @@ int phi_of(int n) {
 // calculates Euler's phi function for all values from 1 to n
 // Time complexity : O(n)
 
-vector<int> phi_linear(int n) {
-    vector<int> phi(n + 1), spf(n + 1), primes;
+vector <int> phi;
+void init_phi(int n) {
+    vector<int> spf(n + 1), primes;
+    phi.resize(n + 1),
     phi[0] = 0; phi[1] = 1;
 
     for (int i = 2; i <= n; ++i) {
@@ -38,7 +40,7 @@ vector<int> phi_linear(int n) {
             phi[i * p] = phi[i] * (p - (i % p != 0));
         }
     }
-    return phi;
+    return;
 }
 
 int main() {
