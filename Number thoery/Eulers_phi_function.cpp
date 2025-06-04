@@ -43,6 +43,21 @@ void init_phi(int n) {
     return;
 }
 
+/*
+// memory efficient function
+// Time complexity : O(nlogn)
+void init_phi(int n) {
+    phi.resize(n + 1);
+    iota(phi.begin(), phi.end(), 0);
+
+    for (int i = 2; i <= n; ++i) {
+        if (phi[i] == i) {
+            for (int j = i; j <= n; j += i) phi[j] -= phi[j] / i;
+        }
+    }
+}
+*/
+
 int main() {
     ios::sync_with_stdio(false);
     cin.tie(0);
