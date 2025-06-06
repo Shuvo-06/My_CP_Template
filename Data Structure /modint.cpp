@@ -6,6 +6,9 @@ struct modint {
     int value;
     modint(long long v = 0) : value((v % MOD + MOD) % MOD) {}
 
+    friend istream& operator>>(istream& in, modint& a) { long long x; return in >> x, a = modint(x), in; }
+    friend ostream& operator<<(ostream& out, const modint& a) { return out << a.value; }
+
     modint& operator+=(const modint& o) { if ((value += o.value) >= MOD) value -= MOD; return *this; }
     modint& operator-=(const modint& o) { if ((value -= o.value) < 0) value += MOD; return *this; }
     modint& operator*=(const modint& o) { value = int(1LL * value * o.value % MOD); return *this; }
@@ -31,18 +34,16 @@ struct modint {
         while (p) { if (p & 1) r *= a; a *= a; p >>= 1; }
         return r;
     }
-
     modint inv() const { return pow(MOD - 2); }
-    int val() const { return value; }
 };
 using mint97 = modint<1000000007>;
 using mint99 = modint<998244353>;
 
 int main() {
-    mint97 a = 2, b = 5;
-    cout << (a.pow(10) + b).val() << '\n';
-    cout << a.val() << "\n";
-
+    mint97 a, b;
+    cin >> a >> b;
+    cout << a * b << "\n";  
+    
     return;
 }
 
