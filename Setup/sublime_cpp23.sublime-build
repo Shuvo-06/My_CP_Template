@@ -1,0 +1,6 @@
+{
+    "cmd": ["g++", "-std=c++23", "-Wall", "-Wextra", "-O2", "-DSUBLIME", "$file", "-o", "$file_base_name.exe", "&&", "$file_base_name.exe"],
+    "working_dir": "$file_path",
+    "selector": "source.c++",
+    "shell": true
+}
