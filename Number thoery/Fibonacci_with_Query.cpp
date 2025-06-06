@@ -2,30 +2,37 @@
 using namespace std;
 const long long int MOD = 1000000007;
 
-map <long long int, long long int> F;
-long long int fib(long long int n) {
-	if (n < 0) return -1;
-	if (F.count(n)) return F[n];
-	
-	long long int k = (n >> 1);
-	if ((n & 1) == 0) return F[n] = (fib(k) * fib(k) + fib(k-1) * fib(k-1)) % MOD;
-	else return F[n] = (fib(k) * fib(k+1) + fib(k-1) * fib(k)) % MOD;
+// iterative version
+// logN per query
+// can't support heavy querying, eg query count >= 1e7 for dp or other stuffs
+long long int fib(long long int n, long long int a, long long int b) {
+    if (n == 0) return a;
+    for (long long int i = 63 - __builtin_clzll(n); i >= 0; i--) {
+        long long int d = (a * ((2 * b - a + MOD) % MOD)) % MOD;
+        long long int e = (a * a + b * b) % MOD;
+        if ((n >> i) & 1) {
+            a = e;
+            b = (d + e) % MOD;
+        } 
+        else {
+            a = d;
+            b = e;
+        }
+    }
+    return a;
 }
 
 int main(){
-	F[0] = 1;
-	F[1] = 1;
-	// for fibonacci series : 1 1 2 3 5 8 13 21 34 55
-	// indexing like vector and other DS
-	// can calculate upto 1e18
-	// Time complexity : O(logn * loglogn)
+	// function descriptio : fib(element number - 1, first element in series, second element in series)
+	// Time complexity : O(logn)
+	// tested on CSES fibonacci number
 	
 	int q;
 	cin >> q;
 	while (q--){
-	  long long int x;
-	  cin >> x;
-	  cout << fib(x) << "\n";
+		long long int x;
+	  	cin >> x;
+	  	cout << fib(x, 1, 1) << "\n";
 	}
 	return 0;
 }
