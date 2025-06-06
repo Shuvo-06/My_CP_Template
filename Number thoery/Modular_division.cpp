@@ -1,6 +1,18 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+// p is prime 
+// Time complexity : O(n)
+// generated inv[i] = 1 / i (mod p)
+vector <int> inv;
+void init_inv(int n, int p) {
+    inv.resize(n + 1);
+    inv[1] = 1;
+    for (int i = 2; i <= n; i++) {
+        inv[i] = (1LL * (p - p / i) * inv[p % i]) % p;
+    }
+}
+
 long long int powA(long long int a, long long int b, long long int mod) {
     long long int ans=1;
     while (b) {
