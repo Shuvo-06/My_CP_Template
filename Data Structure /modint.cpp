@@ -12,7 +12,7 @@ struct modint {
     modint& operator+=(const modint& o) { if ((value += o.value) >= MOD) value -= MOD; return *this; }
     modint& operator-=(const modint& o) { if ((value -= o.value) < 0) value += MOD; return *this; }
     modint& operator*=(const modint& o) { value = int(1LL * value * o.value % MOD); return *this; }
-    modint& operator/=(const modint& o) { return *this *= o.inv(); }
+    modint& operator/=(const modint& o) { return *this *= o.inverse_of_number(); }
 
     explicit operator bool() const { return value != 0; }
     bool operator==(const modint& o) const { return value == o.value; }
@@ -29,12 +29,14 @@ struct modint {
     friend modint operator*(modint a, const modint& b) { return a *= b; }
     friend modint operator/(modint a, const modint& b) { return a /= b; }
 
+    int val() const { return value; }
+
     modint pow(long long p) const {
         modint a = *this, r = 1;
         while (p) { if (p & 1) r *= a; a *= a; p >>= 1; }
         return r;
     }
-    modint inv() const { return pow(MOD - 2); }
+    modint inverse_of_number() const { return pow(MOD - 2); }
 };
 using mint97 = modint<1000000007>;
 using mint99 = modint<998244353>;
