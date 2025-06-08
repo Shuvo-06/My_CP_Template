@@ -66,15 +66,28 @@ int check_bit(long long int n, int i) {return (n >> i) & 1ULL;}
 // --- Math ---
 ll __lcm(ll a, ll b) { return (a / __gcd(a, b)) * b; }
 
+long long int isqrt(long long int x) {
+    long long int l = 0, r = x, ans = 0;
+    while (l <= r) {
+        long long int m = (l + r) / 2;
+        if (m * m <= x) ans = m, l = m + 1;
+        else r = m - 1;
+    }
+    return ans;
+}
+
 template <int MOD>
 struct modint {
     int value;
     modint(long long v = 0) : value((v % MOD + MOD) % MOD) {}
 
+    friend istream& operator>>(istream& in, modint& a) { long long x; return in >> x, a = modint(x), in; }
+    friend ostream& operator<<(ostream& out, const modint& a) { return out << a.value; }
+
     modint& operator+=(const modint& o) { if ((value += o.value) >= MOD) value -= MOD; return *this; }
     modint& operator-=(const modint& o) { if ((value -= o.value) < 0) value += MOD; return *this; }
     modint& operator*=(const modint& o) { value = int(1LL * value * o.value % MOD); return *this; }
-    modint& operator/=(const modint& o) { return *this *= o.inv(); }
+    modint& operator/=(const modint& o) { return *this *= o.inverse_of_number(); }
 
     explicit operator bool() const { return value != 0; }
     bool operator==(const modint& o) const { return value == o.value; }
@@ -91,17 +104,17 @@ struct modint {
     friend modint operator*(modint a, const modint& b) { return a *= b; }
     friend modint operator/(modint a, const modint& b) { return a /= b; }
 
+    int val() const { return value; }
+
     modint pow(long long p) const {
         modint a = *this, r = 1;
         while (p) { if (p & 1) r *= a; a *= a; p >>= 1; }
         return r;
     }
-
-    modint inv() const { return pow(MOD - 2); }
-    int val() const { return value; }
+    modint inverse_of_number() const { return pow(MOD - 2); }
 };
-using mint97 = modint<1000000007>;
-using mint99 = modint<998244353>;
+using mint97 = modint <1000000007>;
+using mint99 = modint <998244353>;
 
 // --- Miscellanous ---
 int cir(vector<int>& vec, int lo, int hi) {
@@ -114,10 +127,8 @@ vector<pair<int, int>> moves4 = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}}; string moves
 vector<pair<int, int>> moves8 = {{-1, -1}, {-1, 0}, {-1, 1}, {0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}};
 vector<pair<int, int>> knight = {{-2, -1}, {-2, 1}, {-1, -2}, {-1, 2}, {1, -2}, {1, 2}, {2, -1}, {2, 1}};
 
-
-
 void precalc() {
-
+    
 }
 
 void solve() {
@@ -135,10 +146,11 @@ int32_t main() {
         freopen("outputf.out", "w", stdout);
         freopen("error.txt", "w", stderr);
     #endif
+
     precalc();
 
-    solve();
-    // testcase(tt);
+    // solve();
+    testcase(tt);
 
     #ifdef SUBLIME
         cerr << fixed << setprecision(10);
