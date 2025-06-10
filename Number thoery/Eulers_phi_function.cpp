@@ -23,7 +23,7 @@ int phi_of(int n) {
 // Time complexity : O(n)
 
 vector <int> phi;
-void init_phi(int n) {
+constexpr bool init_phi(int n) {
     vector<int> spf(n + 1), primes;
     phi.resize(n + 1),
     phi[0] = 0; phi[1] = 1;
@@ -40,13 +40,13 @@ void init_phi(int n) {
             phi[i * p] = phi[i] * (p - (i % p != 0));
         }
     }
-    return;
+    return true;
 }
 
 /*
 // memory efficient function
 // Time complexity : O(nlogn)
-void init_phi(int n) {
+constexpr bool init_phi(int n) {
     phi.resize(n + 1);
     iota(phi.begin(), phi.end(), 0);
 
@@ -55,6 +55,7 @@ void init_phi(int n) {
             for (int j = i; j <= n; j += i) phi[j] -= phi[j] / i;
         }
     }
+    return true;
 }
 */
 
