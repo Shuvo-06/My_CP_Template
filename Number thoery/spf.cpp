@@ -1,24 +1,27 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-vector <bool> isPrime;
-vector <int> spf;
-void SPF(int n){
-  isPrime.resize(n + 1, false);
-  spf.resize(n + 1, -1);
-	for (int i = 2; i <= n; i += 2)	spf[i] = 2;
-	for (int i = 3; i <= n; i += 2){
-		if (!isPrime[i]){
-			spf[i] = i;
-			for (int j = i; j * i <= n; j += 2){
-				if (!isPrime[j * i]){
-				  isPrime[j * i] = true;
-				  spf[j * i] = i;
-				}
-			}
-		}
-	}
-	return;
+vector<bool> isPrime;
+vector<int> spf;
+void init_spf(int n) {
+    isPrime.assign(n + 1, true);
+    spf.assign(n + 1, -1);
+
+    isPrime[0] = isPrime[1] = false;
+    spf[0] = 0;
+    spf[1] = 1;
+
+    for (int i = 2; i <= n; ++i) {
+        if (isPrime[i]) {
+            spf[i] = i;
+            for (long long int j = 1LL * i * i; j <= n; j += i) {
+                if (isPrime[j]) {
+                    isPrime[j] = false;
+                    spf[j] = i;
+                }
+            }
+        }
+    }
 }
 
 vector <int> factorize(int k) {
@@ -39,6 +42,6 @@ int main(){
   // Smallest Prime factor (SPF) 
   // Time complexity : O(nloglogn) but lower operation count than usual
   // Super fast factorization
-  // Time complexity O(logN)
+  // Time complexity O(√n / log n)
   return 0;
 }
