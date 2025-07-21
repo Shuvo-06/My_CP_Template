@@ -1,83 +1,99 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-template <class T>
-struct SegmentTree {
+class SegmentTree {
+private: 
     int n;
-    vector<T> seg;
+    vector<long long> seg;
 
-    SegmentTree() {}
-    SegmentTree(const vector<int> &v) {
-        n = v.size();
-        seg.resize(4 * n);
-        build(v, 1, 0, n - 1);
+    pair <int, int> get_child(int idx, int lo, int hi) {
+        int mid = lo + (hi - lo) / 2;
+        return {idx + 1, idx + 2 * (mid - lo + 1)};
     }
 
-    void build(const vector<int> &v, int ind, int lo, int hi) {
+    void ibuild(int idx, vector<long long> &v, int lo, int hi) {
         if (lo == hi) {
-            seg[ind] = v[lo]; // change here
+            seg[idx] = v[lo]; // change if needed
             return;
         }
-        int mid = (lo + hi) / 2;
-        build(v, 2 * ind, lo, mid);
-        build(v, 2 * ind + 1, mid + 1, hi);
-        seg[ind] = min(seg[2 * ind], seg[2 * ind + 1]); // change here
+
+        int mid = lo + (hi - lo) / 2;
+        auto [lci, rci] = get_child(idx, lo, hi);
+        ibuild(lci, v, lo, mid);
+        ibuild(rci, v, mid + 1, hi);
+        seg[idx] = seg[lci] + seg[rci]; // change if needed
     }
 
-    T query(int l, int r) {
-        return iq(1, 0, n - 1, l, r);
-    }
-
-    void set(int pos, int val) {
-        iu(1, 0, n - 1, pos, val);
-    }
-
-    T iq(int ind, int tl, int tr, int l, int r) {
-        if (r < tl || tr < l) return INT_MAX; // change here
-        if (l <= tl && tr <= r) return seg[ind]; // change here
-        int tm = (tl + tr) / 2;
-        return min(iq(2 * ind, tl, tm, l, r), iq(2 * ind + 1, tm + 1, tr, l, r)); // change here
-    }
-
-    void iu(int ind, int tl, int tr, int pos, int val) {
-        if (tl == tr) {
-            seg[ind] = val; // change here
+    void iset(int idx, int pos, long long val, int lo, int hi) {
+        if (lo == hi) {
+            seg[idx] = val; // change if needed
             return;
         }
-        int tm = (tl + tr) / 2;
-        if (pos <= tm) iu(2 * ind, tl, tm, pos, val);
-        else iu(2 * ind + 1, tm + 1, tr, pos, val);
-        seg[ind] = min(seg[2 * ind], seg[2 * ind + 1]); // change here
+
+        int mid = lo + (hi - lo) / 2;
+        auto [lci, rci] = get_child(idx, lo, hi);
+        if (pos <= mid) iset(lci, pos, val, lo, mid);
+        else iset(rci, pos, val, mid + 1, hi);
+        seg[idx] = seg[lci] + seg[rci]; // change if needed
     }
+
+    long long int iquery(int idx, int lo, int hi, int ql, int qr) {
+        if (qr < lo || hi < ql) return 0LL; // change if needed
+        if (ql <= lo && hi <= qr) return seg[idx]; // change if needed
+
+        int mid = lo + (hi - lo) / 2;
+        auto [lci, rci] = get_child(idx, lo, hi);
+        auto left = iquery(lci, lo, mid, ql, qr);
+        auto right = iquery(rci, mid + 1, hi, ql, qr);
+        return left + right; // change if needed
+    }
+
+public: 
+    SegmentTree(int _n) : n(_n) { seg.assign(2 * n, 0); }
+    void build(vector<long long> &v) { ibuild(0, v, 0, n - 1); }
+    void set(int pos, long long val) { iset(0, pos, val, 0, n - 1); }
+    long long int query(int l, int r) { return iquery(0, 0, n - 1, l, r); }
+    long long int query(int i) { return iquery(0, 0, n - 1, i, i); }
+    void add(int pos, long long val) { set(pos, query(pos, pos) + val); }
 };
 
-
 int main() {
-    ios::sync_with_stdio(false);
+    ios :: sync_with_stdio(0);
     cin.tie(0);
-    cout.tie(0);
-
-    int n, q;
-    cin >> n >> q;
-    vector <int> v(n);
-    for (auto &x : v) cin >> x;
-
-    SegmentTree <int> st(v);
-    while (q--) {
-        int type;
-        cin >> type;
-        if (type == 1) {
-            int k, u;
-            cin >> k >> u;
-            st.set(k - 1, u);
-        }
-        else {
-            int l, r;
-            cin >> l >> r;
-            cout << st.query(l - 1, r - 1) << "\n";
-        }
-        
-    }
     
+    int tt;
+    cin >> tt;
+    for (int tno = 1; tno <= tt; tno++) {
+        cout << "Case " << tno << ": \n";
+        
+        int n, q;
+        cin >> n >> q;
+        vector <long long int> v(n);
+        for (auto &x : v) cin >> x;
+        SegmentTree st(n);
+        st.build(v);
+        
+        while (q--) {
+            int op;
+            cin >> op;
+            if (op == 1) {
+                int i;
+                cin >> i;
+                cout << st.query(i) << "\n";
+                st.set(i, 0LL);
+            }
+            else if (op == 2) {
+                int i;
+                long long int v;
+                cin >> i >> v;
+                st.add(i, v);
+            }
+            else {
+                int l, r;
+                cin >> l >> r;
+                cout << st.query(l, r) << "\n";
+            }
+        }
+    }
     return 0;
 }
