@@ -24,6 +24,18 @@ private:
         seg[idx] = seg[lci] + seg[rci]; // change here if needed
     }
 
+    void assign(int idx, int lo, int hi, int val) {
+        if (lo == hi) {
+            seg[idx] = val;
+            return;
+        }
+
+        auto [mid, lci, rci] = get_child(idx, lo, hi);
+        assign(lci, lo, mid, val);
+        assign(rci, mid + 1, hi, val);
+        seg[idx] = seg[lci] + seg[rci]; // change here if needed
+    }
+
     void push(int idx, int lo, int hi) {
         if (set_pending[idx]) {
             seg[idx] = lazy_set[idx] * (hi - lo + 1LL); // set entire segment
@@ -98,6 +110,13 @@ public:
         lazy_add.assign(2 * n, 0);
         lazy_set.assign(2 * n, 0);
         set_pending.assign(2 * n, false);
+    }
+
+    void assign(int _n, int val) { 
+        n = _n; 
+        seg.resize(2 * n); 
+        lazy_add.resize(2 * n);
+        assign(0, 0, n - 1, val);
     }
 
     void build(vector<long long> &v) { 
