@@ -5,7 +5,8 @@ class LazySegmentTree {
 private: 
     int n;
     vector<long long> seg, lazy_add, lazy_set;
-    vector<bool> set_pending;
+    vector<bool> set_pending; 
+    const long long int NO_OP = 0;
 
     tuple<int, int, int> get_child(int idx, int lo, int hi) {
         int mid = lo + (hi - lo) / 2;
@@ -94,7 +95,7 @@ private:
 
     long long int query(int idx, int clo, int chi, int qlo, int qhi) {
         push(idx, clo, chi);
-        if (chi < qlo || clo > qhi) return 0LL; // change here if needed
+        if (chi < qlo || clo > qhi) return NO_OP; // change here if needed
         if (qlo <= clo && chi <= qhi) return seg[idx];
 
         auto [mid, lci, rci] = get_child(idx, clo, chi);
@@ -104,19 +105,11 @@ private:
     }
 
 public: 
-    void resize(int _n) { 
-        n = _n; 
-        seg.assign(2 * n, 0); 
-        lazy_add.assign(2 * n, 0);
-        lazy_set.assign(2 * n, 0);
-        set_pending.assign(2 * n, false);
-    }
-
     void assign(int _n, int val) { 
         n = _n; 
         seg.resize(2 * n); 
         lazy_add.resize(2 * n);
-        assign(0, 0, n - 1, val);
+        if (val != 0) assign(0, 0, n - 1, val);
     }
 
     void build(vector<long long> &v) { 
