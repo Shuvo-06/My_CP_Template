@@ -8,7 +8,8 @@ using namespace __gnu_pbds;
 template <typename T>
 class pbds {
 private:
-    tree<T, null_type, greater<T>, rb_tree_tag, tree_order_statistics_node_update> xyz;
+    tree<T, null_type, less<T>, rb_tree_tag, tree_order_statistics_node_update> xyz;
+    // tree<T, null_type, greater<T>, rb_tree_tag, tree_order_statistics_node_update> xyz;
 
 public:
     void insert(T val) {
@@ -34,7 +35,10 @@ public:
     }
 
     void print() {
-        for (auto val : xyz) cout << val << " ";
+        int idx = 0;
+        for (auto val : xyz) {
+            cout << idx++ << " -> " << val.first << " " << val.second << "\n";
+        }
         cout << "\n";
     }
 
