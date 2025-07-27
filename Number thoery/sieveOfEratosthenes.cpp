@@ -3,7 +3,7 @@ using namespace std;
 
 vector<bool> isPrime;
 vector<int> primes;
-constexpr bool init_sieve(int n,bool genArr){
+void init_sieve(int n,bool genArr){
     isPrime.resize(n, true);
     isPrime[0] = false;
     isPrime[1] = false;
@@ -17,7 +17,6 @@ constexpr bool init_sieve(int n,bool genArr){
         if (isPrime[i]) primes.push_back(i);
       }
     }
-    return true;
 }
 
 int main(){
