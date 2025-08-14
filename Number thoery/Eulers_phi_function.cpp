@@ -23,7 +23,7 @@ int phi_of(int n) {
 // Time complexity : O(n)
 
 vector <int> phi;
-constexpr bool init_phi(int n) {
+bool init_phi(int n) {
     vector<int> spf(n + 1), primes;
     phi.resize(n + 1),
     phi[0] = 0; phi[1] = 1;
