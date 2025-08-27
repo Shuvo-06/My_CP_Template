@@ -9,31 +9,31 @@ class SparseTable {
     int n, K;
 
 public:
-    SparseTable(vector<T>& v, function <T (const T&, const T&)> op) {
+    SparseTable(const vector<T>& v, function<T(const T&, const T&)> op) {
         f = op;
         n = v.size();
-        if (n == 0) { 
-            K = 0; 
+        if (n == 0) {
+            K = 0;
             return;
         }
 
-
         K = 32 - __builtin_clz(n);
-        st.assign(K, vector<T>(n));
-        st[0] = v;
+        st.assign(n, vector<T>(K));
+        lg.assign(n + 1, 0);
 
-        for (int k = 1; k < K; ++k) {
-            int len = 1 << k;
-            int half = len >> 1;
-            for (int i = 0; i + len <= n; i++) {
-                st[k][i] = f(st[k-1][i], st[k-1][i + half]);
+        for (int i = 0; i < n; i++) st[i][0] = v[i];
+
+        for (int j = 1; j < K; j++) {
+            for (int i = 0; i + (1 << j) <= n; i++) {
+                st[i][j] = f(st[i][j-1], st[i + (1 << (j-1))][j-1]);
             }
         }
     }
 
+
     T query(int l, int r) {
         int k = 31 - __builtin_clz(r - l + 1);
-        return f(st[k][l], st[k][r - (1 << k) + 1]);
+        return f(st[l][k], st[r - (1 << k)][k]);
     }
 };
 
