@@ -61,6 +61,10 @@ vector<int> prevGreater(vector<int>& arr) {
     return res;
 }
 
+// for circular array
+// traverse the array twice
+// and only push elements in first traversal
+
 int main() {
     
     return 0;
