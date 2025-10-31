@@ -7,7 +7,7 @@ class SparseTable {
     vector<int> lg;
     function<T(const T&, const T&)> f;
     int n, K;
-
+ 
 public:
     SparseTable(const vector<T>& v, function<T(const T&, const T&)> op) {
         f = op;
@@ -16,36 +16,31 @@ public:
             K = 0;
             return;
         }
-
+ 
         K = 32 - __builtin_clz(n);
         st.assign(n, vector<T>(K));
         lg.assign(n + 1, 0);
-
+ 
         for (int i = 0; i < n; i++) st[i][0] = v[i];
-
         for (int j = 1; j < K; j++) {
             for (int i = 0; i + (1 << j) <= n; i++) {
-                st[i][j] = f(st[i][j-1], st[i + (1 << (j-1))][j-1]);
+                st[i][j] = f(st[i][j - 1], st[i + (1 << (j - 1))][j - 1]);
             }
         }
+ 
+        for (int i = 2; i <= n; i++) lg[i] = lg[i >> 1] + 1;
     }
-
-
+ 
     T query(int l, int r) {
-        int k = 31 - __builtin_clz(r - l + 1);
-        return f(st[l][k], st[r - (1 << k)][k]);
+        if (l > r) swap(l, r);
+        int k = lg[r - l + 1];
+        return f(st[l][k], st[r - (1 << k) + 1][k]);
     }
 };
 
 int main() {
     ios::sync_with_stdio(false);
-    cin.tie(nullptr );
-
-    #ifdef SUBLIME
-        freopen("inputf.in", "r", stdin);
-        freopen("outputf.out", "w", stdout);
-        freopen("error.txt", "w", stderr);
-    #endif
+    cin.tie(nullptr);
         
     int n, q;
     cin >> n >> q;
