@@ -30,6 +30,22 @@ inline bool operator<(const Query &a, const Query &b) {
     return a.ord < b.ord;
 }
 
+
+/*
+// Sort function for Mo's algorithm
+void mo_sort(vector<Query> &queries, int n) {
+    int block = sqrt(n);
+    sort(queries.begin(), queries.end(), [block](const Query &a, const Query &b) {
+        int blockA = a.l / block;
+        int blockB = b.l / block;
+        if (blockA != blockB)
+            return blockA < blockB;
+        return (blockA & 1) ? (a.r > b.r) : (a.r < b.r);
+        // The above alternating sort on 'r' reduces time complexity in practice
+    });
+}
+
+*/
 int main() {
     ios::sync_with_stdio(false);
     cin.tie(0);
