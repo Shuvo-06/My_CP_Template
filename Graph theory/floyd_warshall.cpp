@@ -1,41 +1,99 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-// finds shrotest distance between every pair of edges
-// Time complexity : O(V^3)
+/*
+All-Pairs Shortest Path (Floyd-Warshall) with Negative Cycle Detection
 
-const int INF = 1e9;
+Key Data:
+- dis[i][j] = shortest distance from i to j (inf if unreachable)
+- state[i][j] = -1 if path passes through a negative cycle, 0 otherwise
 
-void floyd_warshall(int n, vector<vector<int>>& dist) {
-    for (int k = 0; k < n; ++k) {
-        for (int i = 0; i < n; i++) for (int j = 0; j < n; j++) {
-            if (dist[i][k] < INF && dist[k][j] < INF) {
-                dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]);
+Algorithm:
+1. Initialize dis[i][i] = 0, set edges.
+2. Floyd-Warshall: dis[i][j] = min(dis[i][j], dis[i][k] + dis[k][j])
+3. Propagate negative cycles: if dis[k][k] < 0, mark all reachable paths through k as -Infinity.
+4. Answer queries using dis and state.
+
+Complexity:
+- Time: O(n^3), Space: O(n^2)
+
+Usage:
+- Suitable for small/dense graphs (n <= 500) where all-pairs distances are needed.
+- Avoid for very large or sparse graphs; use Bellman-Ford per source or Johnson’s algorithm instead.
+
+Common Pitfalls:
+- Forgetting negative cycle propagation
+- Ignoring self-loops (dis[i][i] < 0)
+- Multiple edges: always take min weight
+- Checking for inf before printing
+- Integer overflow: use long long
+*/
+
+
+#define int long long
+const int inf = 4e18;
+
+void floyd_warshall(int n, vector<vector<int>> &dis) {
+    for (int k = 0; k < n; k++) {
+        for (int i = 0; i < n; i++) { 
+            for (int j = 0; j < n; j++) {
+                if (dis[i][k] != inf && dis[k][j] != inf) {
+                    dis[i][j] = min(dis[i][j], dis[i][k] + dis[k][j]);
+                }
             }
         }
     }
 }
 
-int main() {
-    int n, m;
-    cin >> n >> m;
-    
-    vector<vector<int>> dist(n, vector<int>(n, INF));
-    
-    for (int i = 0; i < n; i++) dist[i][i] = 0;
-
-    for (int i = 0; i < m; ++i) {
-        int u, v, w;
-        cin >> u >> v >> w;
-        dist[u][v] = min(dist[u][v], w);
+void neg_in_floyd_warshall(int n, vector <vector <int>> &dis, vector <vector <int>> &state) {
+    for (int k = 0; k < n; k++) {
+        if (dis[k][k] >= 0) continue; // k is not in a negative cycle
+        for (int i = 0; i < n; i++) {
+            if (dis[i][k] == inf) continue;
+            for (int j = 0; j < n; j++) {
+                if (dis[k][j] == inf) continue;
+                state[i][j] = -1; // path from i to j goes through a negative cycle
+            }
+        }
     }
+}
 
-    floyd_warshall(n, dist);
 
-    for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < n; ++j) {
-            if (dist[i][j] == INF) cout << "INF ";
-            else cout << dist[i][j] << " ";
+int32_t main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    #ifdef SUBLIME
+        freopen("inputf.in", "r", stdin);
+        freopen("outputf.out", "w", stdout);
+        freopen("error.txt", "w", stderr);
+    #endif
+
+    while (true) {
+        int n, m, k;
+        cin >> n >> m >> k;
+        if (n == 0 && m == 0 && k == 0) break;
+
+        vector<vector<int>> dis(n, vector<int>(n, inf));
+        vector<vector<int>> state(n, vector<int>(n, 0)); // -1 for negative cycle
+
+        for (int i = 0; i < n; i++) dis[i][i] = 0;
+
+        for (int i = 0; i < m; i++) {
+            int u, v, w;
+            cin >> u >> v >> w;
+            dis[u][v] = min(dis[u][v], (int)w);
+        }
+
+        floyd_warshall(n, dis);
+        neg_in_floyd_warshall(n, dis, state);
+        
+        while (k--) {
+            int u, v;
+            cin >> u >> v;
+            if (state[u][v] == -1) cout << "-Infinity\n";
+            else if (dis[u][v] == inf) cout << "Impossible\n";
+            else cout << dis[u][v] << "\n";
         }
         cout << "\n";
     }
@@ -43,24 +101,4 @@ int main() {
     return 0;
 }
 
-
-
-/*
-Run Floyd-Warshall algorithm on the graph. Initially  d[v][v] = 0  for each  v . But after running the algorithm d[v][v]  will be smaller than 0.
-If there exists a negative length path from v to v. We can use this to also find all pairs of vertices that don't have a shortest path between them. 
-We iterate over all pairs of vertices (i, j)  and for each pair we check whether they have a shortest path between them.
-To do this try all possibilities for an intermediate vertex t.  
-(i, j)  doesn't have a shortest path, if one of the intermediate vertices t has d[t][t] < 0  (i.e. t is part of a cycle of negative weight),  
-t  can be reached from t  and j can be reached from t . 
-Then the path from  i to j can have arbitrarily small weight. We will denote this with -INF.
-
-for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < n; ++j) {
-        for (int t = 0; t < n; ++t) {
-            if (d[i][t] < INF && d[t][t] < 0 && d[t][j] < INF)
-                d[i][j] = - INF; 
-        }
-    }
-}
-*/
-
+// checked on https://open.kattis.com/problems/allpairspath
