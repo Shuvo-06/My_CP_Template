@@ -9,37 +9,29 @@ template <typename T>
 class pbds {
 private:
     tree<T, null_type, less<T>, rb_tree_tag, tree_order_statistics_node_update> xyz;
-    // tree<T, null_type, greater<T>, rb_tree_tag, tree_order_statistics_node_update> xyz;
 
 public:
-    void insert(T val) {
+    void insert(const T& val) {
         xyz.insert(val);
     }
 
-    void erase(T val) {
-        xyz.erase(xyz.find(val));
+    bool exists(const T& val) {
+        return xyz.find(val) != xyz.end();
     }
 
-    T at_idx(int index) {
+    void erase(const T& val) {
+        auto it = xyz.find(val);
+        if (it != xyz.end()) xyz.erase(it);
+    }
+
+    T operator [] (int index) {
         auto it = xyz.find_by_order(index);
         if (it == xyz.end()) throw out_of_range("Index out of range");
         return *it;
     }
 
-    int get_idx(T val) {
+    int get_idx(const T& val) {
         return xyz.order_of_key(val);
-    }
-
-    bool exists(T val) {
-        return xyz.find(val) != xyz.end();
-    }
-
-    void print() {
-        int idx = 0;
-        for (auto val : xyz) {
-            cout << idx++ << " -> " << val.first << " " << val.second << "\n";
-        }
-        cout << "\n";
     }
 
     int size() {
@@ -68,3 +60,4 @@ int main() {
     }
     return 0;
 }
+
