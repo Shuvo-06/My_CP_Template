@@ -1,14 +1,13 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int N = 1e5 + 7;
 class LCA {
 public:
     int n, LOG;
     vector<int> depth;
     vector<vector<int>> up;
-    // vector<vector<int>> mn, mx; 
-    // vector<long long> dist_root;
+    vector<vector<int>> mn, mx; 
+    vector<long long> dist_root;
 
     LCA(int n) : n(n) {
         LOG = 0;
@@ -45,8 +44,8 @@ public:
         for (int i = 1; i < LOG; i++) {
             if (up[u][i-1] != -1) {
                 up[u][i] = up[up[u][i-1]][i-1];
-                // mn[u][i] = min(mn[u][i-1], mn[ up[u][i-1] ][i-1]);
-                // mx[u][i] = max(mx[u][i-1], mx[ up[u][i-1] ][i-1]);
+                mn[u][i] = min(mn[u][i-1], mn[ up[u][i-1] ][i-1]);
+                mx[u][i] = max(mx[u][i-1], mx[ up[u][i-1] ][i-1]);
             }
             else break;
         }
@@ -54,10 +53,10 @@ public:
         for (auto &[v, w] : adj[u]) {
             if (v == p) continue;
             depth[v] = depth[u] + 1;
-            // dist_root[v] = dist_root[u] + w;
+            dist_root[v] = dist_root[u] + w;
 
-            // mn[v][0] = w;
-            // mx[v][0] = w;
+            mn[v][0] = w;
+            mx[v][0] = w;
 
             dfs(v, u, adj);
         }
@@ -93,9 +92,7 @@ public:
 
     int kth(int u, int v, int k) {
         int lc = lca(u, v);
-
-        int dis1 = depth[u] - depth[lc];
-        int dis2 = depth[v] - depth[lc];
+        int dis1 = depth[u] - depth[lc], dis2 = depth[v] - depth[lc];
 
         if (k > dis1 + dis2) return -1;
         else if (k < dis1) return lift(u, k);
@@ -103,7 +100,6 @@ public:
         else return lift(v, dis1 + dis2 - k);
     }
 
-    /*
     pair <int, int> query(int u, int v) {
         int lc = lca(u, v);
         int dis1 = depth[u] - depth[lc];
@@ -123,19 +119,16 @@ public:
         }
         return ans;
     }
-    */
 
     int dist(int u, int v) {
         int lc = lca(u, v);
         return depth[u] + depth[v] - 2 * depth[lc];
     }
 
-    /*
     long long disw(int u, int v) {
         int lc = lca(u, v);
         return dist_root[u] + dist_root[v] - 2 * dist_root[lc];
     }
-    */
 
     void add_leaf(int x, int p) {
         up[x][0] = p;
@@ -149,6 +142,10 @@ public:
     void remove_leaf(int x) {
         depth[x] = 0;
         up[x].assign(LOG, -1);
+    }
+
+    bool on_path(int u, int v, int x) {
+        return dist(u, v) == dist(u, x) + dist(v, x);
     }
 };
 
