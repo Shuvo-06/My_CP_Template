@@ -37,7 +37,19 @@ public:
     int size() {
         return xyz.size();
     }
+
+    int count_in_range(T lo, T hi) {
+        if (lo > hi) return 0;
+        return xyz.order_of_key(hi + 1) - xyz.order_of_key(lo);
+    }
+
+    // might need to overload comparison operators
+    // T operator > (T &a) {}
+
+    // might need to overload arithmetic operators
+    // T operator + (T &a) {}
 };
+
 
 int main() {
     ios::sync_with_stdio(0);
@@ -60,4 +72,5 @@ int main() {
     }
     return 0;
 }
+
 
