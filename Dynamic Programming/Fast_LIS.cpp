@@ -1,6 +1,24 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+// for strings
+// worst case time complexity : O(n * m)
+// average case time complexity : O(n log n)
+int longestCommonSubsequence(string &text1, string &text2) {
+    vector <vector <int>> idx(26);
+    for (int i = text1.size() - 1; i >= 0; i--) idx[text1[i] - 'a'].push_back(i);
+        
+    vector <int> lis;
+    for (auto &x : text2) {
+        for (auto y : idx[x - 'a']) {
+            if (lis.empty() || lis.back() < y) lis.push_back(y);
+            else lis[lower_bound(lis.begin(), lis.end(), y) - lis.begin()] = y;
+        }
+    }
+
+    return lis.size();
+}
+
 int main() {
     ios::sync_with_stdio(false);
     cin.tie(0);
