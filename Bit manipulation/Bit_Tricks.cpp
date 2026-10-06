@@ -2,120 +2,189 @@
 #pragma GCC target("popcnt")
 using namespace std;
 
-// divide by 2 -> right shift 
-// multiply by 2 -> left shift
-// Modulo -> x&((1<<k)-1)
+// ==================== BASIC BIT OPERATIONS ====================
+
+// Divide by 2 -> right shift
+// Multiply by 2 -> left shift
+// x % 2^k -> x & (2^k - 1), for x >= 0
 
 int set_bit(int n, int i) {
-  return (n | (1 << i));
+  return n | (1 << i);
 }
 
 int clear_bit(int n, int i) {
-  return (n & ~(1 << i));
+  return n & ~(1 << i);
 }
 
 int flip_bit(int n, int i) {
   return n ^ (1 << i);
 }
 
-// bit_ceil / bit_floor: round up/down to the next power of two
-// built-in function - has_single_bit
-bool is_power_of_2 (unsigned int n) {
-  return (n <= 0) ? false : ((n & (n - 1)) == 0);
+int check_bit(unsigned int n, int i) {
+  return (n >> i) & 1;
 }
 
 bool is_even(int n) {
-  return (n & 1) != 1;
+  return !(n & 1);
 }
 
-int check_bit(unsigned int n, int i) {
-  return ((n >> i) & 1);
+bool is_power_of_2(unsigned int n) {
+  return n && !(n & (n - 1));
 }
 
-bool isDivisibleByPowerOf2(int n, int i) {
-  return (n & ((1 << i) - 1)) == 0;
+bool is_divisible_by_power_of_2(unsigned int n, int k) {
+  return (n & ((1u << k) - 1)) == 0;
 }
 
-int count_set_bits (int n) {
+// ==================== LOWEST / HIGHEST SET BIT ====================
+
+// Lowest set bit:
+// n & -n
+unsigned int lowest_set_bit(unsigned int n) {
+  return n & -n;
+}
+
+// Remove the lowest set bit:
+// n & (n - 1)
+unsigned int remove_lowest_set_bit(unsigned int n) {
+  return n & (n - 1);
+}
+
+// Set all bits at and below the highest set bit:
+// n | (n - 1)
+unsigned int fill_below_highest_bit(unsigned int n) {
+  return n | (n - 1);
+}
+
+// ==================== COUNTING SET BITS ====================
+
+// Brian Kernighan: O(number of set bits)
+int count_set_bits(unsigned int n) {
   int count = 0;
-  while (n){
-    n = n & (n - 1);
+  while (n) {
+    n &= n - 1;
     count++;
   }
   return count;
 }
-// only for c++ 20
-/*
-int count_set_bits_upto_n(int n) {
-  int count = 0;
-  while (n > 0) {
-    int x = bit_width(n) - 1;
-    count += x << (x - 1);
-    n -= 1 << x;
-    count += n + 1;
-  }
-  return count;
-}
-*/
 
-int count_set_bits_upto_n(int n) {
-  int count = 0;
-  while (n > 0) {
-    int x = static_cast<int>(std::log2(n));
-    count += x * (1 << (x - 1));
-    count += n - (1 << x) + 1;
-    n -= (1 << x);
+// Built-in:
+// __builtin_popcount(x)   -> int
+// __builtin_popcountll(x) -> long long
+
+// ==================== COUNT SET BITS IN [0, n] ====================
+
+// Total number of set bits in binary representations of 0..n.
+// For n >= 0.
+// Uses the decomposition by highest set bit.
+long long count_set_bits_upto_n(unsigned int n) {
+  long long count = 0;
+
+  while (n) {
+    int x = 31 - __builtin_clz(n);  // x = floor(log2(n))
+
+    // Number of 1s contributed by the highest bit among 0..2^x-1.
+    count += 1LL * x * (1LL << (x - 1));
+
+    // Highest bit contributes once for each number from 2^x to n.
+    count += n - (1u << x) + 1;
+
+    n -= 1u << x;
   }
+
   return count;
 }
+
+// ==================== XOR / SWAP ====================
+
 void swap_num(int &a, int &b) {
-  a = a ^ b;
-  b = a ^ b;
-  a = a ^ b;
+  a ^= b;
+  b ^= a;
+  a ^= b;
 }
 
-/*
-**inequality theory
-X --> number of set bits in a
-Y -->  number of set bits in b
-Z --> number of set bits in a ^ b
-*/
+// XOR toggle trick:
+// If x can only be a or b, then:
+// x = a ^ b ^ x
 
-/*
-If (x + y) is even --> z is even
-If (x + y) is odd --> z is odd
-*/
+// ==================== FUNDAMENTAL IDENTITIES ====================
 
-/*
-**the XOR trick
-If x can only have two values - a ,b
-Toggling --> x=a^b^x
-*/
+// a + b = (a ^ b) + 2(a & b)
+// a + b = (a | b) + (a & b)
 
-/*
-**fundamental properties
-A + B = (A ^ B) + 2 * (A & B)
-A + B = (A | B) + (A & B)
-*/
+// a | b = (a ^ b) + (a & b)
+// a ^ b = (a | b) ^ (a & b)
 
-/*
-**number of set bits in X using built-in function (TC-> O(1) )
-If x in integer --> __builtin_popcount(x)
-If x is long long integer --> __builtin_popcountll(x)
-*/
+// a ^ (a & b) = (a | b) ^ b
+// b ^ (a & b) = (a | b) ^ a
+// (a & b) ^ (a | b) = a ^ b
 
-// rotl / rotr: rotate the bits in the number
-// countl_zero / countr_zero / countl_one / countr_one: count the leading/trailing zeros/ones  
-// __builtin_ffs(int) finds the index of the first (most right) set bit (__builtin_ffs(0b0001'0010'1100) == 3)
-// __builtin_clz(unsigned int) the count of leading zeros (__builtin_clz(0b0001'0010'1100) == 23)
-// __builtin_ctz(unsigned int) the count of trailing zeros (__builtin_ctz(0b0001'0010'1100) == 2)
-// __builtin_parity(x) the parity (even or odd) of the number of ones in the bit representation
+// ==================== SET-BIT PARITY ====================
 
-int main(){
-  ios::sync_with_stdio(false);
-  cin.tie(0);
-  cout.tie(0);
-  
-  
-  return 0;
-}
+// Let:
+// x = popcount(a)
+// y = popcount(b)
+// z = popcount(a ^ b)
+//
+// Since every common set bit disappears in XOR:
+// z = x + y - 2 * popcount(a & b)
+//
+// Therefore:
+// (x + y) and z have the same parity.
+// If x + y is even -> z is even.
+// If x + y is odd  -> z is odd.
+
+// ==================== SUBTRACTION IDENTITIES ====================
+
+// From:
+// a - b = a + (-b)
+// and the identities above:
+//
+// a - b = (a ^ (a & b)) - ((a | b) ^ a)
+// a - b = ((a | b) ^ b) - ((a | b) ^ a)
+// a - b = (a ^ (a & b)) - (b ^ (a & b))
+// a - b = ((a | b) ^ b) - (b ^ (a & b))
+
+// ==================== USEFUL BUILT-INS ====================
+
+// C++20:
+// std::has_single_bit(n)
+// std::bit_ceil(n)
+// std::bit_floor(n)
+// std::rotl(x, k)
+// std::rotr(x, k)
+// std::countl_zero(x)
+// std::countr_zero(x)
+// std::countl_one(x)
+// std::countr_one(x)
+
+// GCC built-ins:
+// __builtin_ffs(x)      -> 1-based index of least significant set bit
+// __builtin_clz(x)      -> number of leading zeroes
+// __builtin_ctz(x)      -> number of trailing zeroes
+// __builtin_parity(x)   -> parity of popcount(x)
+
+// Example:
+// __builtin_ffs(0b000100101100) == 3
+// __builtin_ctz(0b000100101100) == 2
+
+// ==================== QUICK FACTS ====================
+//
+// n & (n - 1)      -> removes lowest set bit
+// n & -n           -> isolates lowest set bit
+// n | (n - 1)      -> sets all bits below the highest set bit
+// n ^ (n - 1)      -> sets all bits from the lowest set bit upward
+// n & ((1 << k)-1) -> n % 2^k, for n >= 0
+// n >> k           -> floor(n / 2^k), for non-negative n
+// n << k           -> n * 2^k, if no overflow
+//
+// a ^ a = 0
+// a ^ 0 = a
+// a ^ b ^ a = b
+// XOR is associative and commutative.
+//
+// For a power of two n:
+// n & (n - 1) = 0
+//
+// For a nonzero n:
+// floor(log2(n)) = index of its highest set bit.
