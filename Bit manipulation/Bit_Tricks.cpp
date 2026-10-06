@@ -95,6 +95,19 @@ long long count_set_bits_upto_n(unsigned int n) {
   return count;
 }
 
+// ==================== Gray Code =====================
+// gray(i) = i ^ (i >> 1);
+// rev_gray(gray(i)) = i
+
+int gray (int n) {
+  	return n ^ (n >> 1);
+}
+int rev_gray (int g) {
+  	int n = 0;
+  	for (; g; g >>= 1) n ^= g;
+  	return n;
+}
+
 // ==================== XOR / SWAP ====================
 
 void swap_num(int &a, int &b) {
