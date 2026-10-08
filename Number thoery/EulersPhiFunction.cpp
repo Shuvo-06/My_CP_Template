@@ -16,12 +16,9 @@ int phi_of(int n) {
     return res;
 }
 
-// 1139 - 1219 ms for n = 1e8
-// 109 - 140 ms for n = 1e7
-// 8 - 15 ms for n = 1e6
+
 // calculates Euler's phi function for all values from 1 to n
 // Time complexity : O(n)
-
 vector <int> phi;
 bool init_phi(int n) {
     vector<int> spf(n + 1), primes;
@@ -63,8 +60,6 @@ int main() {
     ios::sync_with_stdio(false);
     cin.tie(0);
     cout.tie(0);
-
-
 
     return 0;
 }
