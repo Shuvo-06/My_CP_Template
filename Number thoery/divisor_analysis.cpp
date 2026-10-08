@@ -36,9 +36,6 @@ void init_nod(int n) {
     }
 }
 
-
-
-
 // SOD function calculation 
 // method 1 : from prime factorization 
 long long int sod_pfact(vector <pair <int, int>> &v) {
@@ -63,7 +60,6 @@ long long int sod_sqrtn(long long int n) {
     return res;
 }
 
-
 // method 3 : sieve style
 // time complexity : O(nlogn)
 vector <long long int> sod;
@@ -75,8 +71,6 @@ void init_sod(int n) {
         }
     }
 }
-
-
 
 int32_t main() {
     ios::sync_with_stdio(false);
