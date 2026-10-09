@@ -15,23 +15,17 @@ class WaveletTree {
 
     Node* build(vector<int> &a, int lo, int hi) {
         Node *t = new Node(lo, hi);
-
         if (lo == hi) return t;
-
         int mid = (lo + hi) / 2;
         vector<int> L, R;
-
         t->pref.push_back(0);
         t->sum.push_back(0);
-
         for (int x : a) {
             t->pref.push_back(t->pref.back() + (x <= mid));
             t->sum.push_back(t->sum.back() + x);
-
             if (x <= mid) L.push_back(x);
             else R.push_back(x);
         }
-
         t->l = build(L, lo, mid);
         t->r = build(R, mid + 1, hi);
 
@@ -53,21 +47,15 @@ class WaveletTree {
     int count(Node *t, int l, int r, int x) {
         if (l >= r || x < t->lo) return 0;
         if (t->hi <= x) return r - l;
-
         int lb = t->pref[l], rb = t->pref[r];
-
-        return count(t->l, lb, rb, x)
-             + count(t->r, l - lb, r - rb, x);
+        return count(t->l, lb, rb, x) + count(t->r, l - lb, r - rb, x);
     }
 
     long long sum(Node *t, int l, int r, int x) {
         if (l >= r || x < t->lo) return 0;
         if (t->hi <= x) return t->sum[r] - t->sum[l];
-
         int lb = t->pref[l], rb = t->pref[r];
-
-        return sum(t->l, lb, rb, x)
-             + sum(t->r, l - lb, r - rb, x);
+        return sum(t->l, lb, rb, x) + sum(t->r, l - lb, r - rb, x);
     }
 
 public:
